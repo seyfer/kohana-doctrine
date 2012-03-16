@@ -25,6 +25,7 @@
 return array(
     // location of the "Doctrine" directory
     'doctrine_path' => MODPATH . 'kohana-doctrine/vendor/doctrine-orm/',
+    'extensions_path' => MODPATH . 'kohana-doctrine/vendor/extensions/',
     // classloader config
     'entities_namespace' => 'Entities',
     'entities_path' => APPPATH . 'classes',
