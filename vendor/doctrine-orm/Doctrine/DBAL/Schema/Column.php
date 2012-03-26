@@ -89,8 +89,18 @@ class Column extends AbstractAsset
     protected $_columnDefinition = null;
 
     /**
+     * @var string
+     */
+    protected $_comment = null;
+
+    /**
+     * @var array
+     */
+    protected $_customSchemaOptions = array();
+
+    /**
      * Create a new Column
-     * 
+     *
      * @param string $columnName
      * @param Doctrine\DBAL\Types\Type $type
      * @param int $length
@@ -324,6 +334,64 @@ class Column extends AbstractAsset
         return $this;
     }
 
+    public function setComment($comment)
+    {
+        $this->_comment = $comment;
+        return $this;
+    }
+
+    public function getComment()
+    {
+        return $this->_comment;
+    }
+
+    /**
+     * @param  string $name
+     * @param  mixed $value
+     * @return Column
+     */
+    public function setCustomSchemaOption($name, $value)
+    {
+        $this->_customSchemaOptions[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @param  string $name
+     * @return boolean
+     */
+    public function hasCustomSchemaOption($name)
+    {
+        return isset($this->_customSchemaOptions[$name]);
+    }
+
+    /**
+     * @param  string $name
+     * @return mixed
+     */
+    public function getCustomSchemaOption($name)
+    {
+        return $this->_customSchemaOptions[$name];
+    }
+
+    /**
+     * @param array $customSchemaOptions
+     * @return Column
+     */
+    public function setCustomSchemaOptions(array $customSchemaOptions)
+    {
+        $this->_customSchemaOptions = $customSchemaOptions;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomSchemaOptions()
+    {
+        return $this->_customSchemaOptions;
+    }
+
     /**
      * @param Visitor $visitor
      */
@@ -349,6 +417,7 @@ class Column extends AbstractAsset
             'unsigned'      => $this->_unsigned,
             'autoincrement' => $this->_autoincrement,
             'columnDefinition' => $this->_columnDefinition,
-        ), $this->_platformOptions);
+            'comment' => $this->_comment,
+        ), $this->_platformOptions, $this->_customSchemaOptions);
     }
 }
