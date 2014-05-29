@@ -1,1 +1,0 @@
-download: http://www.doctrine-project.org/downloads/DoctrineORM-2.0.6-full.tar.gz

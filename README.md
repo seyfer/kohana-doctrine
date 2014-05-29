@@ -1,10 +1,10 @@
 kohana-doctrine
 ===============
 
-Kohana 3.1 module to integrate Doctrine ORM 2.0.6.
+Kohana 3.2 module to integrate Doctrine ORM 2.4.
 
 Download Doctrine 2 and put it in /vendor:
-http://www.doctrine-project.org/downloads/DoctrineORM-2.0.6-full.tar.gz
+composer update
 
 
 License:
