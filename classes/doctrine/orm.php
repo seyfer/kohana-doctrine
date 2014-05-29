@@ -10,6 +10,10 @@ use \Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
 use \Doctrine\ORM\Mapping\Driver\YamlDriver;
 use \Doctrine\ORM\Mapping\Driver\XmlDriver;
 use \Doctrine\ORM\Mapping\Driver\PHPDriver;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 
 /**
  * creates a Doctrine EntityManager for a specific database group
@@ -30,9 +34,10 @@ use \Doctrine\ORM\Mapping\Driver\PHPDriver;
  * @copyright 2011 International Jaywalkers
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
  * @link      http://github.com/gimpe/kohana-doctrine
-*/
+ */
 class Doctrine_ORM
 {
+
     private static $doctrine_config;
     private static $database_config;
     private $evm;
@@ -56,31 +61,31 @@ class Doctrine_ORM
     public function __construct($database_group = 'default')
     {
         // if config was not set by init.php, load it
-        if (self::$doctrine_config === NULL)
-        {
+        if (self::$doctrine_config === NULL) {
             self::$doctrine_config = Kohana::$config->load('doctrine');
         }
 
-        $config = new Configuration();
+        $isDevMode = (Kohana::$environment == Kohana::DEVELOPMENT);
+
+//        $config = new Configuration();
+        $config = Setup::createConfiguration($isDevMode);
 
         // proxy configuration
         $config->setProxyDir(self::$doctrine_config['proxy_dir']);
         $config->setProxyNamespace(self::$doctrine_config['proxy_namespace']);
-        $config->setAutoGenerateProxyClasses((Kohana::$environment == Kohana::DEVELOPMENT));
+        $config->setAutoGenerateProxyClasses($isDevMode);
 
         // caching configuration
         // @todo make this configurable; use kohana-cache module?
-        $cache_implementation = new ArrayCache();
+        $cache_implementation  = new ArrayCache();
         // $cache_implementation = new MemcacheCache();
         // $cache_implementation = new ApcCache();
         $config->setMetadataCacheImpl($cache_implementation);
         //$config->setQueryCacheImpl($cache_implementation);
         //$config->setResultCacheImpl($cache_implementation);
-
         // mappings/metadata driver configuration
         $driver_implementation = NULL;
-        switch (self::$doctrine_config['mappings_driver'])
-        {
+        switch (self::$doctrine_config['mappings_driver']) {
             case 'php':
                 $driver_implementation = new PHPDriver(array(self::$doctrine_config['mappings_path']));
                 break;
@@ -88,8 +93,10 @@ class Doctrine_ORM
                 $driver_implementation = new XmlDriver(array(self::$doctrine_config['mappings_path']));
                 break;
             case 'annotation':
-                $driver_implementation = $config->newDefaultAnnotationDriver(array(self::$doctrine_config['mappings_path']));
-            	break;                
+//                $driver_implementation = $config->newDefaultAnnotationDriver(array(self::$doctrine_config['mappings_path']));
+                $driver_implementation = new AnnotationDriver(new AnnotationReader(), array(self::$doctrine_config['mappings_path']));
+                AnnotationRegistry::registerLoader('class_exists');
+                break;
             default:
             case 'yaml':
                 $driver_implementation = new YamlDriver(array(self::$doctrine_config['mappings_path']));
@@ -98,8 +105,7 @@ class Doctrine_ORM
         $config->setMetadataDriverImpl($driver_implementation);
 
         // load config if not defined
-        if (self::$database_config === NULL)
-        {
+        if (self::$database_config === NULL) {
             self::$database_config = Kohana::$config->load('database');
         }
 
@@ -107,30 +113,27 @@ class Doctrine_ORM
         $db_config = Arr::GET(self::$database_config, $database_group, array());
 
         // verify that the database group exists
-        if (empty($db_config))
-        {
+        if (empty($db_config)) {
             throw new Kohana_Database_Exception('database-group "' . $database_group . '" doesn\'t exists');
         }
 
-        if($db_config['type'] == 'pdo'){
-            $pdo = new PDO($db_config['connection']['dsn'], $db_config['connection']['username'], $db_config['connection']['password'],
-                              array(PDO::ATTR_PERSISTENT => $db_config['connection']['persistent'])
-                          );
+        if ($db_config['type'] == 'pdo') {
+            $pdo               = new PDO($db_config['connection']['dsn'], $db_config['connection']['username'], $db_config['connection']['password'], array(PDO::ATTR_PERSISTENT => $db_config['connection']['persistent'])
+            );
             $connectionOptions = array(
-                'pdo' => $pdo,
+                'pdo'    => $pdo,
                 'dbname' => null
             );
-
-        }else{
+        } else {
             // database configuration
             $connectionOptions = array(
-                'driver' => self::$doctrine_config['type_driver_mapping'][$db_config['type']],
-                'host' => $db_config['connection']['hostname'],
-                'port' => $db_config['connection']['port'],
-                'dbname' => $db_config['connection']['database'],
-                'user' => $db_config['connection']['username'],
+                'driver'   => self::$doctrine_config['type_driver_mapping'][$db_config['type']],
+                'host'     => $db_config['connection']['hostname'],
+                'port'     => $db_config['connection']['port'],
+                'dbname'   => $db_config['connection']['database'],
+                'user'     => $db_config['connection']['username'],
                 'password' => $db_config['connection']['password'],
-                'charset' => $db_config['charset'],
+                'charset'  => $db_config['charset'],
             );
         }
 
@@ -140,13 +143,10 @@ class Doctrine_ORM
 
         // specify the charset for MySQL/PDO
         $driverName = $this->em->getConnection()->getDriver()->getName();
-        if ($driverName == 'pdo_mysql')
-        {
+        if ($driverName == 'pdo_mysql') {
             $this->em->getEventManager()->addEventSubscriber(new MysqlSessionInit($db_config['charset'], 'utf8_unicode_ci'));
-        }
-        else if ($driverName == 'pdo_pgsql')
-        {
-            $this->em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('bytea','text');
+        } else if ($driverName == 'pdo_pgsql') {
+            $this->em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('bytea', 'text');
         }
 
         // @todo profiling
@@ -174,4 +174,5 @@ class Doctrine_ORM
     {
         return $this->evm;
     }
+
 }
