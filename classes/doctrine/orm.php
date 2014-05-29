@@ -149,6 +149,10 @@ class Doctrine_ORM
             $this->em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('bytea', 'text');
         }
 
+        //fix enum
+        $conn = $this->em->getConnection();
+        $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
         // @todo profiling
         //if ($db_config['profiling'])
         //{
