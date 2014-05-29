@@ -24,9 +24,9 @@
  */
 return array(
     // location of the "Doctrine" directory
-    'vendor_path'     => APPPATH . '../vendor/',
-    'doctrine_path'   => APPPATH . '../vendor/doctrine/',
-    'extensions_path' => APPPATH . '../vendor/gedmo/doctrine-extensions/lib/Gedmo/',
+    'vendor_path'         => APPPATH . '../vendor/',
+    'doctrine_path'       => APPPATH . '../vendor/doctrine/',
+    'extensions_path'     => APPPATH . '../vendor/gedmo/doctrine-extensions/lib/Gedmo/',
     // classloader config
     'entities_namespace'  => 'Entities',
     'entities_path'       => APPPATH . 'classes',
