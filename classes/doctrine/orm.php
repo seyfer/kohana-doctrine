@@ -44,41 +44,39 @@ class Doctrine_ORM
     private $em;
 
     /**
-	 * @var  array  doctrine instances
-	 */
-	public static $instances = array();
+     * @var  array  doctrine instances
+     */
+    public static $instances = array();
 
-	/**
-	 * @var  string  default database group
-	 */
-	public static $default = 'default';
-    
     /**
-	 * Creates a singleton doctrine instance of the given database group
-	 *
-	 *     $doctrine = Doctrine_ORM::instance();
-	 *
-	 *
-	 * @param   string  $database_group   database group
-	 * @return  Doctrine_ORM
-	 * @uses    Kohana::$config
-	 */
-	public static function instance($database_group = 'default')
-	{
-		if ($database_group === NULL)
-		{
-			// Use the default type
-			$database_group = Doctrine_ORM::$default;
-		}
+     * @var  string  default database group
+     */
+    public static $default = 'default';
 
-		if ( ! isset(Doctrine_ORM::$instances[$database_group]))
-		{
-			Doctrine_ORM::$instances[$database_group] = new Doctrine_ORM($database_group);
-		}
+    /**
+     * Creates a singleton doctrine instance of the given database group
+     *
+     *     $doctrine = Doctrine_ORM::instance();
+     *
+     *
+     * @param   string  $database_group   database group
+     * @return  Doctrine_ORM
+     * @uses    Kohana::$config
+     */
+    public static function instance($database_group = 'default')
+    {
+        if ($database_group === NULL) {
+            // Use the default type
+            $database_group = Doctrine_ORM::$default;
+        }
 
-		return Doctrine_ORM::$instances[$database_group];
-	}
-    
+        if (!isset(Doctrine_ORM::$instances[$database_group])) {
+            Doctrine_ORM::$instances[$database_group] = new Doctrine_ORM($database_group);
+        }
+
+        return Doctrine_ORM::$instances[$database_group];
+    }
+
     /**
      * set Kohana database configuration
      *
@@ -102,9 +100,9 @@ class Doctrine_ORM
         }
 
         $isDevMode = (Kohana::$environment == Kohana::DEVELOPMENT);
-
+        //$isDevMode = TRUE;
 //        $config = new Configuration();
-        $config = Setup::createConfiguration($isDevMode);
+        $config    = Setup::createConfiguration($isDevMode);
 
         // proxy configuration
         $config->setProxyDir(self::$doctrine_config['proxy_dir']);
@@ -193,6 +191,35 @@ class Doctrine_ORM
         //if ($db_config['profiling'])
         //{
         //}
+    }
+
+    /**
+     * check current em and if no connection
+     * recreate
+     * @param type $em
+     * @return type
+     */
+    protected function checkEMConnection($em)
+    {
+        if (!$em->isOpen()) {
+            $connection = $em->getConnection();
+            $config     = $em->getConfiguration();
+
+            return $em->create(
+                            $connection, $config
+            );
+        }
+    }
+
+    /**
+     * reconnect if needed
+     */
+    public function reconnectEm()
+    {
+        $newEm = $this->checkEMConnection($this->em);
+        if ($newEm) {
+            $this->em = $newEm;
+        }
     }
 
     /**
