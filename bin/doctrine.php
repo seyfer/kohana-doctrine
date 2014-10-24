@@ -30,32 +30,18 @@ $system      = realpath(__DIR__ . $path_config['system']);
 $application = realpath(__DIR__ . $path_config['application']);
 $modules     = realpath(__DIR__ . $path_config['modules']);
 
-if (!$system || !$application || !$modules) {
-// your installation paths (needed to run CLI)
-    if (file_exists(__DIR__ . '/../../../../application/')) {
-        $system      = realpath(__DIR__ . '/../../../kohana/system/');
-        $application = realpath(__DIR__ . '/../../../../application/');
-    } else {
-        $system      = realpath(__DIR__ . '/../../../system/');
-        $application = realpath(__DIR__ . '/../../../application/');
-    }
+if (file_exists($application . "/../index.php")) {
+    $index          = file_get_contents($application . "/../index.php");
+    //replace echo request result
+    $indexFiltered1 = preg_replace("/echo .*/smi", "", $index);
+    //replace php tag for eval
+    $indexFiltered2 = preg_replace("/<\?.*?(\?>|$)/smi", "", $indexFiltered1);
 
-    $modules = realpath(__DIR__ . '/../../');
+    eval($indexFiltered2);
+} else {
+    //if index.php not found
+    initLikeIndex($system, $application, $modules);
 }
-
-if ($application === FALSE || $modules === FALSE || $system === FALSE) {
-    exit('please configure kohana-doctrine/bin/doctrine.php paths' . PHP_EOL
-            . 'application: ' . $application . PHP_EOL
-            . 'modules: ' . $modules . PHP_EOL
-            . 'system: ' . $system . PHP_EOL);
-}
-
-// define constants (index.php)
-define('DOCROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
-define('EXT', '.php');
-define('APPPATH', realpath($application) . DIRECTORY_SEPARATOR);
-define('MODPATH', realpath($modules) . DIRECTORY_SEPARATOR);
-define('SYSPATH', realpath($system) . DIRECTORY_SEPARATOR);
 
 // include your Kohana application bootstrap
 include $application . '/bootstrap.php';
@@ -92,7 +78,7 @@ $doctrine_orm = new Doctrine_ORM($database_group);
 $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
     'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($doctrine_orm->get_entity_manager()->getConnection()),
     'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($doctrine_orm->get_entity_manager())
-));
+        ));
 
 // create and run Symfony Console application
 $cli = new Symfony\Component\Console\Application('Kohana Doctrine Command Line Interface</info>'
@@ -104,9 +90,8 @@ $cli->setCatchExceptions(true);
 \Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
 
 // Adding own helpers
-foreach(Kohana::$config->load('doctrine')->get('console_helpers',array()) as
-    /** @var $helper Symfony\Component\Console\Helper\HelperInterface */ $alias => $helper)
-{
+foreach (Kohana::$config->load('doctrine')->get('console_helpers', array()) as
+/** @var $helper Symfony\Component\Console\Helper\HelperInterface */ $alias => $helper) {
     $helperSet->set($helper);
 }
 
@@ -114,5 +99,40 @@ foreach(Kohana::$config->load('doctrine')->get('console_helpers',array()) as
 $cli->setHelperSet($helperSet);
 
 // Run with helperset and add own commands
-\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet,
-	Kohana::$config->load('doctrine')->get('console_commands',array()));
+\Doctrine\ORM\Tools\Console\ConsoleRunner::run($helperSet, Kohana::$config->load('doctrine')->get('console_commands', array()));
+
+/**
+ * init from configured paths
+ * @param type $system
+ * @param type $application
+ * @param type $modules
+ */
+function initLikeIndex($system, $application, $modules)
+{
+    if (!$system || !$application || !$modules) {
+// your installation paths (needed to run CLI)
+        if (file_exists(__DIR__ . '/../../../../application/')) {
+            $system      = realpath(__DIR__ . '/../../../kohana/system/');
+            $application = realpath(__DIR__ . '/../../../../application/');
+        } else {
+            $system      = realpath(__DIR__ . '/../../../system/');
+            $application = realpath(__DIR__ . '/../../../application/');
+        }
+
+        $modules = realpath(__DIR__ . '/../../');
+    }
+
+    if ($application === FALSE || $modules === FALSE || $system === FALSE) {
+        exit('please configure kohana-doctrine/bin/doctrine.php paths' . PHP_EOL
+                . 'application: ' . $application . PHP_EOL
+                . 'modules: ' . $modules . PHP_EOL
+                . 'system: ' . $system . PHP_EOL);
+    }
+
+// define constants (index.php)
+    define('DOCROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
+    define('EXT', '.php');
+    define('APPPATH', realpath($application) . DIRECTORY_SEPARATOR);
+    define('MODPATH', realpath($modules) . DIRECTORY_SEPARATOR);
+    define('SYSPATH', realpath($system) . DIRECTORY_SEPARATOR);
+}
