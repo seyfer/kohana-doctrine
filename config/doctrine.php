@@ -23,32 +23,42 @@
  * @link      http://github.com/gimpe/kohana-doctrine
  */
 return array(
-    // location of the "Doctrine" directory
-    'vendor_path'         => APPPATH . '../vendor/',
-    'doctrine_path'       => APPPATH . '../vendor/doctrine/',
-    'extensions_path'     => APPPATH . '../vendor/gedmo/doctrine-extensions/lib/Gedmo/',
+// location of the "Doctrine" directory
+    'vendor_path'            => APPPATH . '../vendor/',
+    'doctrine_path'          => APPPATH . '../vendor/doctrine/',
+    'extensions_path'        => APPPATH . '../vendor/gedmo/doctrine-extensions/lib/Gedmo/',
     // classloader config
-    'entities_namespace'  => 'Entities',
-    'entities_path'       => APPPATH . 'classes',
-    'proxies_namespace'   => 'Proxies',
-    'proxies_path'        => APPPATH . 'classes',
+    'entities_namespace'     => 'Entities',
+    'entities_path'          => APPPATH . 'classes',
+    'proxies_namespace'      => 'Proxies',
+    'proxies_path'           => APPPATH . 'classes',
     // doctrine config
-    'proxy_dir'           => APPPATH . 'classes/Proxies',
-    'proxy_namespace'     => 'Proxies',
-    'mappings_path'       => APPPATH . 'mappings/',
-    'mappings_driver'     => 'yml',
+    'proxy_dir'              => APPPATH . 'classes/Proxies',
+    'proxy_namespace'        => 'Proxies',
+    'mappings_path'          => APPPATH . 'mappings/',
+    'mappings_driver'        => 'yml',
     // mappings between Kohaha database types and Doctrine database drivers
-    // @see http://kohanaframework.org/3.1/guide/database/config#connection-settings
-    // @see http://www.doctrine-project.org/docs/dbal/2.0/en/reference/configuration.html#connection-details
-    'type_driver_mapping' => array(
+// @see http://kohanaframework.org/3.1/guide/database/config#connection-settings
+// @see http://www.doctrine-project.org/docs/dbal/2.0/en/reference/configuration.html#connection-details
+    'type_driver_mapping'    => array(
         'pdo'   => 'pdo',
         'mysql' => 'pdo_mysql',
     //'N/A' => 'pdo_pgsql',
-    //'N/A' => 'pdo_sqlite',
-    //'N/A' => 'pdo_oci',
-    //'N/A' => 'oci8',
+//'N/A' => 'pdo_sqlite',
+//'N/A' => 'pdo_oci',
+//'N/A' => 'oci8',
     ),
-    'console_commands'    => array(),
-    'console_helpers'     => array(),
-    'configuration'       => APPPATH . 'config/doctrine.xml',
+    'console_commands'       => array(),
+    'console_helpers'        => array(),
+    'configuration'          => APPPATH . 'config/doctrine.xml',
+    'debug'                  => TRUE,
+    'default_database_group' => 'default',
+    'cache_implementation'   => 'ArrayCache',
+    'cache_namespace'        => NULL,
+    'enabled_extensions'     => array(
+// 		'string' => array(
+//     		'GroupConcat'   =>  'DoctrineExtensions\Query\Mysql\GroupConcat',
+//     		'StringAgg'     =>  'DoctrineExtensions\Query\PostgreSql\StringAgg',
+//        )
+    ),
 );

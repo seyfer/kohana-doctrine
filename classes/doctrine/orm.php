@@ -38,9 +38,24 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 class Doctrine_ORM
 {
 
+    /**
+     * @var array 
+     */
     private static $doctrine_config;
+
+    /**
+     * @var array 
+     */
     private static $database_config;
+
+    /**
+     * @var EventManager 
+     */
     private $evm;
+
+    /**
+     * @var EntityManager 
+     */
     private $em;
 
     /**
@@ -99,9 +114,7 @@ class Doctrine_ORM
             self::$doctrine_config = Kohana::$config->load('doctrine');
         }
 
-        $isDevMode = (Kohana::$environment == Kohana::DEVELOPMENT);
-        //$isDevMode = TRUE;
-//        $config = new Configuration();
+        $isDevMode = self::$doctrine_config['debug'];
         $config    = Setup::createConfiguration($isDevMode);
 
         // proxy configuration
@@ -109,14 +122,25 @@ class Doctrine_ORM
         $config->setProxyNamespace(self::$doctrine_config['proxy_namespace']);
         $config->setAutoGenerateProxyClasses($isDevMode);
 
+        // String extensions
+        foreach (
+        Arr::get(self::$doctrine_config->get('enabled_extensions', array()), 'string', array())
+        as $name => $class) {
+            $config->addCustomStringFunction($name, $class);
+        }
+
         // caching configuration
-        // @todo make this configurable; use kohana-cache module?
-        $cache_implementation  = new ArrayCache();
-        // $cache_implementation = new MemcacheCache();
-        // $cache_implementation = new ApcCache();
+        $cache_class          = '\Doctrine\Common\Cache\\' . self::$doctrine_config['cache_implementation'];
+        $cache_implementation = new $cache_class;
+
+        // set namespace on cache
+        if ($cache_namespace = self::$doctrine_config['cache_namespace']) {
+            $cache_implementation->setNamespace($cache_namespace);
+        }
         $config->setMetadataCacheImpl($cache_implementation);
-        //$config->setQueryCacheImpl($cache_implementation);
-        //$config->setResultCacheImpl($cache_implementation);
+        $config->setQueryCacheImpl($cache_implementation);
+        $config->setResultCacheImpl($cache_implementation);
+
         // mappings/metadata driver configuration
         $driver_implementation = NULL;
         switch (self::$doctrine_config['mappings_driver']) {
@@ -151,7 +175,7 @@ class Doctrine_ORM
             throw new Kohana_Database_Exception('database-group "' . $database_group . '" doesn\'t exists');
         }
 
-        if ($db_config['type'] == 'pdo') {
+        if (strtolower($db_config['type']) == 'pdo') {
             $pdo               = new PDO($db_config['connection']['dsn'], $db_config['connection']['username'], $db_config['connection']['password'], array(PDO::ATTR_PERSISTENT => $db_config['connection']['persistent'])
             );
             $connectionOptions = array(
@@ -186,11 +210,6 @@ class Doctrine_ORM
         //fix enum
         $conn = $this->em->getConnection();
         $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
-
-        // @todo profiling
-        //if ($db_config['profiling'])
-        //{
-        //}
     }
 
     /**
