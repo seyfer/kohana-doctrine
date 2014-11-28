@@ -69,6 +69,7 @@ $site = $entityManager->getRepository("Doctrine_Entity_Site")->find("11");
 Debug::vars($site);
 ```
 
+There is also Migrations module <https://github.com/seyfer/kohana-doctrinemigrations>
 
 ### You are free:
 * to Share — to copy, distribute and transmit the work
