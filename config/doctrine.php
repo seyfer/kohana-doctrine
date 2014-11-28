@@ -17,10 +17,10 @@
  *
  * @category  module
  * @package   kohana-doctrine
- * @author    gimpe <gimpehub@intljaywalkers.com>
+ * @author    gimpe <gimpehub@intljaywalkers.com> Oleg Abrazhaev <seyferseed@mail.ru>
  * @copyright 2011 International Jaywalkers
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
- * @link      http://github.com/gimpe/kohana-doctrine
+ * @link      http://github.com/seyfer/kohana-doctrine
  */
 return array(
 // location of the "Doctrine" directory

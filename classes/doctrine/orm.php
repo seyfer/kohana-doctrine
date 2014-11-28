@@ -30,10 +30,10 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
  *
  * @category  module
  * @package   kohana-doctrine
- * @author    gimpe <gimpehub@intljaywalkers.com>
+ * @author    gimpe <gimpehub@intljaywalkers.com> Oleg Abrazhaev <seyferseed@mail.ru>
  * @copyright 2011 International Jaywalkers
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
- * @link      http://github.com/gimpe/kohana-doctrine
+ * @link      http://github.com/seyfer/kohana-doctrine
  */
 class Doctrine_ORM
 {
@@ -41,12 +41,12 @@ class Doctrine_ORM
     /**
      * @var array 
      */
-    private static $doctrine_config;
+    private static $doctrineConfig;
 
     /**
      * @var array 
      */
-    private static $database_config;
+    private static $databaseConfig;
 
     /**
      * @var EventManager 
@@ -97,9 +97,9 @@ class Doctrine_ORM
      *
      * @param array $doctrine_config
      */
-    public static function set_config($doctrine_config)
+    public static function setConfig($doctrine_config)
     {
-        self::$doctrine_config = $doctrine_config;
+        self::$doctrineConfig = $doctrine_config;
     }
 
     /**
@@ -110,31 +110,31 @@ class Doctrine_ORM
     public function __construct($database_group = 'default')
     {
         // if config was not set by init.php, load it
-        if (self::$doctrine_config === NULL) {
-            self::$doctrine_config = Kohana::$config->load('doctrine');
+        if (self::$doctrineConfig === NULL) {
+            self::$doctrineConfig = Kohana::$config->load('doctrine');
         }
 
-        $isDevMode = self::$doctrine_config['debug'];
+        $isDevMode = self::$doctrineConfig['debug'];
         $config    = Setup::createConfiguration($isDevMode);
 
         // proxy configuration
-        $config->setProxyDir(self::$doctrine_config['proxy_dir']);
-        $config->setProxyNamespace(self::$doctrine_config['proxy_namespace']);
+        $config->setProxyDir(self::$doctrineConfig['proxy_dir']);
+        $config->setProxyNamespace(self::$doctrineConfig['proxy_namespace']);
         $config->setAutoGenerateProxyClasses($isDevMode);
 
         // String extensions
         foreach (
-        Arr::get(self::$doctrine_config->get('enabled_extensions', array()), 'string', array())
+        Arr::get(self::$doctrineConfig->get('enabled_extensions', array()), 'string', array())
         as $name => $class) {
             $config->addCustomStringFunction($name, $class);
         }
 
         // caching configuration
-        $cache_class          = '\Doctrine\Common\Cache\\' . self::$doctrine_config['cache_implementation'];
+        $cache_class          = '\Doctrine\Common\Cache\\' . self::$doctrineConfig['cache_implementation'];
         $cache_implementation = new $cache_class;
 
         // set namespace on cache
-        if ($cache_namespace = self::$doctrine_config['cache_namespace']) {
+        if ($cache_namespace = self::$doctrineConfig['cache_namespace']) {
             $cache_implementation->setNamespace($cache_namespace);
         }
         $config->setMetadataCacheImpl($cache_implementation);
@@ -143,32 +143,32 @@ class Doctrine_ORM
 
         // mappings/metadata driver configuration
         $driver_implementation = NULL;
-        switch (self::$doctrine_config['mappings_driver']) {
+        switch (self::$doctrineConfig['mappings_driver']) {
             case 'php':
-                $driver_implementation = new PHPDriver(array(self::$doctrine_config['mappings_path']));
+                $driver_implementation     = new PHPDriver(array(self::$doctrineConfig['mappings_path']));
                 break;
             case 'xml':
-                $driver_implementation = new XmlDriver(array(self::$doctrine_config['mappings_path']));
+                $driver_implementation     = new XmlDriver(array(self::$doctrineConfig['mappings_path']));
                 break;
             case 'annotation':
-//                $driver_implementation = $config->newDefaultAnnotationDriver(array(self::$doctrine_config['mappings_path']));
-                $driver_implementation = new AnnotationDriver(new AnnotationReader(), array(self::$doctrine_config['mappings_path']));
+                $useSimpleAnnotationReader = FALSE;
+                $driver_implementation     = $config->newDefaultAnnotationDriver(array(self::$doctrineConfig['mappings_path']), $useSimpleAnnotationReader);
                 AnnotationRegistry::registerLoader('class_exists');
                 break;
             default:
             case 'yaml':
-                $driver_implementation = new YamlDriver(array(self::$doctrine_config['mappings_path']));
+                $driver_implementation     = new YamlDriver(array(self::$doctrineConfig['mappings_path']));
                 break;
         }
         $config->setMetadataDriverImpl($driver_implementation);
 
         // load config if not defined
-        if (self::$database_config === NULL) {
-            self::$database_config = Kohana::$config->load('database');
+        if (self::$databaseConfig === NULL) {
+            self::$databaseConfig = Kohana::$config->load('database');
         }
 
         // get $database_group config
-        $db_config = Arr::GET(self::$database_config, $database_group, array());
+        $db_config = Arr::GET(self::$databaseConfig, $database_group, array());
 
         // verify that the database group exists
         if (empty($db_config)) {
@@ -185,7 +185,7 @@ class Doctrine_ORM
         } else {
             // database configuration
             $connectionOptions = array(
-                'driver'   => self::$doctrine_config['type_driver_mapping'][$db_config['type']],
+                'driver'   => self::$doctrineConfig['type_driver_mapping'][$db_config['type']],
                 'host'     => $db_config['connection']['hostname'],
                 'port'     => $db_config['connection']['port'],
                 'dbname'   => $db_config['connection']['database'],
@@ -246,7 +246,7 @@ class Doctrine_ORM
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    public function get_entity_manager()
+    public function getEntityManager()
     {
         return $this->em;
     }
@@ -256,7 +256,7 @@ class Doctrine_ORM
      *
      * @return \Doctrine\Common\EventManager
      */
-    public function get_event_manager()
+    public function getEventManager()
     {
         return $this->evm;
     }

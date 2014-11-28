@@ -18,10 +18,10 @@
  *
  * @category  module
  * @package   kohana-doctrine
- * @author    gimpe <gimpehub@intljaywalkers.com>
+ * @author    gimpe <gimpehub@intljaywalkers.com> Oleg Abrazhaev <seyferseed@mail.ru>
  * @copyright 2011 International Jaywalkers
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
- * @link      http://github.com/gimpe/kohana-doctrine
+ * @link      http://github.com/seyfer/kohana-doctrine
  */
 // include kohana-doctrine config
 $path_config = include __DIR__ . '/../config/path.php';
@@ -76,8 +76,8 @@ $doctrine_orm = new Doctrine_ORM($database_group);
 
 // add console helpers
 $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-    'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($doctrine_orm->get_entity_manager()->getConnection()),
-    'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($doctrine_orm->get_entity_manager())
+    'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($doctrine_orm->getEntityManager()->getConnection()),
+    'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($doctrine_orm->getEntityManager())
         ));
 
 // create and run Symfony Console application

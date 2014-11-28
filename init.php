@@ -15,10 +15,10 @@
  *
  * @category  module
  * @package   kohana-doctrine
- * @author    gimpe <gimpehub@intljaywalkers.com>
+ * @author    gimpe <gimpehub@intljaywalkers.com> Oleg Abrazhaev <seyferseed@mail.ru>
  * @copyright 2011 International Jaywalkers
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
- * @link      http://github.com/gimpe/kohana-doctrine
+ * @link      http://github.com/seyfer/kohana-doctrine
  */
 // include kohana-doctrine config
 $doctrine_config = Kohana::$config->load('doctrine');
@@ -37,4 +37,4 @@ $classLoader->register();
 Doctrine\ORM\Proxy\Autoloader::register($doctrine_config['proxy_dir'], $doctrine_config['proxy_namespace']);
 
 // Re-use already loaded Doctrine config
-Doctrine_ORM::set_config($doctrine_config);
+Doctrine_ORM::setConfig($doctrine_config);
