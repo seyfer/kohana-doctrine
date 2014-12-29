@@ -1,10 +1,10 @@
 kohana-doctrine
 ===============
 
-Kohana 3.1 module to integrate Doctrine ORM 2.0.6.
+Kohana 3.2 module to integrate Doctrine ORM 2.4.
 
 Download Doctrine 2 and put it in /vendor:
-http://www.doctrine-project.org/downloads/DoctrineORM-2.0.6-full.tar.gz
+composer update
 
 
 License:
@@ -12,6 +12,64 @@ License:
 
 [Attribution 3.0 Unported (CC BY 3.0)](http://creativecommons.org/licenses/by/3.0/)
 
+Usage:
+--------
+
+in config/doctrine.php
+
+```
+'mappings_path'       => APPPATH . 'classes/doctrine/entity',
+'mappings_driver'     => 'annotation',
+```
+Entity in doctrine/entity/ folder
+
+```
+<?php
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Description of Doctrine_Entity_Site
+ *
+ * @author seyfer
+ * @ORM\Entity
+ * @ORM\Table(name="sites")
+ */
+class Doctrine_Entity_Site
+{
+
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue (strategy="IDENTITY")
+     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var string
+     */
+    protected $name;
+}
+```
+
+in controller
+
+```
+$doctrine_orm  = new Doctrine_ORM;
+$entityManager = $doctrine_orm->get_entity_manager();
+
+//EntityManager
+Debug::vars(get_class($entityManager));
+
+$site = $entityManager->getRepository("Doctrine_Entity_Site")->find("11");
+
+//Doctrine_Entity_Site
+Debug::vars($site);
+```
+
+There is also Migrations module <https://github.com/seyfer/kohana-doctrinemigrations>
 
 ### You are free:
 * to Share — to copy, distribute and transmit the work
