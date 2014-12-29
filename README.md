@@ -1,7 +1,7 @@
 kohana-doctrine
 ===============
 
-Kohana 3.2 module to integrate Doctrine ORM 2.4.
+Kohana 3.3 and 3.2 module to integrate Doctrine ORM 2.4.
 
 Download Doctrine 2 and put it in /vendor:
 composer update
