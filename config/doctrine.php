@@ -43,6 +43,8 @@ return array(
     'type_driver_mapping'    => array(
         'pdo'   => 'pdo',
         'mysql' => 'pdo_mysql',
+        'PDO'   => 'pdo',
+        'MySQL' => 'pdo_mysql'
     //'N/A' => 'pdo_pgsql',
 //'N/A' => 'pdo_sqlite',
 //'N/A' => 'pdo_oci',
