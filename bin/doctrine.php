@@ -30,12 +30,15 @@ $system      = realpath(__DIR__ . $path_config['system']);
 $application = realpath(__DIR__ . $path_config['application']);
 $modules     = realpath(__DIR__ . $path_config['modules']);
 
-if (file_exists($application . "/../index.php")) {
-    $index          = file_get_contents($application . "/../index.php");
+if (file_exists($modules . "/kohana-doctrine/bin/index.php")) {
+    $index          = file_get_contents($modules . "/kohana-doctrine/bin/index.php");
     //replace echo request result
-    $indexFiltered1 = preg_replace("/echo .*/smi", "", $index);
+//    $indexFiltered1 = preg_replace("/^.*EXT\; .*/smi", "", $index);
+
+    print_r($index);
+
     //replace php tag for eval
-    $indexFiltered2 = preg_replace("/<\?.*?(\?>|$)/smi", "", $indexFiltered1);
+    $indexFiltered2 = preg_replace("/<\?.*?(\?>|$)/smi", "", $index);
 
     eval($indexFiltered2);
 } else {
