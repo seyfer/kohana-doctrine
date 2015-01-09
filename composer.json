@@ -1,11 +1,32 @@
 {
-    "name": "kohana/doctrine",
-    "version": "3.2",
-    "description": "Kohana module for 3.2 version to integrate with Doctrine ORM",
-    "author": "Oleg Abrazhaev <seyferseed@mail.ru>",
+    "name": "seyfer/kohana-doctrine",
+    "version": "3.3",
+    "description": "Kohana module to integrate with Doctrine ORM",
+    "type": "kohana-module",
+    "authors": [
+        {
+            "name": "seyfer",
+            "email": "seyferseed@mail.ru",
+            "homepage": "http://seyferseed.ru",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": ">=5.4",
         "doctrine/orm": "2.4.*",
-        "gedmo/doctrine-extensions": "v2.3.*"
+        "gedmo/doctrine-extensions": "v2.3.*",
+        "composer/installers": "1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "classes/"
+        ]
+    },
+    "extra": {
+        "installer-paths": {
+            "vendor/kohana/modules/{$name}/": [
+                "type:kohana-module"
+            ]
+        }
     }
 }
