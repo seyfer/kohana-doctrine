@@ -31,11 +31,7 @@ $application = realpath(__DIR__ . $path_config['application']);
 $modules     = realpath(__DIR__ . $path_config['modules']);
 
 if (file_exists($modules . "/kohana-doctrine/bin/index.php")) {
-    $index          = file_get_contents($modules . "/kohana-doctrine/bin/index.php");
-    //replace echo request result
-//    $indexFiltered1 = preg_replace("/^.*EXT\; .*/smi", "", $index);
-
-    print_r($index);
+    $index = file_get_contents($modules . "/kohana-doctrine/bin/index.php");
 
     //replace php tag for eval
     $indexFiltered2 = preg_replace("/<\?.*?(\?>|$)/smi", "", $index);
