@@ -22,8 +22,8 @@
  * @license   http://creativecommons.org/licenses/by/3.0/ CC BY 3.0
  * @link      http://github.com/seyfer/kohana-doctrine
  */
-return array(
-// location of the "Doctrine" directory
+return [
+    // location of the "Doctrine" directory
     'vendor_path'            => APPPATH . '../vendor/',
     'doctrine_path'          => APPPATH . '../vendor/doctrine/',
     'extensions_path'        => APPPATH . '../vendor/gedmo/doctrine-extensions/lib/Gedmo/',
@@ -38,29 +38,32 @@ return array(
     'mappings_path'          => APPPATH . 'classes/Doctrine/Entity',
     'mappings_driver'        => 'yml',
     // mappings between Kohaha database types and Doctrine database drivers
-// @see http://kohanaframework.org/3.1/guide/database/config#connection-settings
-// @see http://www.doctrine-project.org/docs/dbal/2.0/en/reference/configuration.html#connection-details
-    'type_driver_mapping'    => array(
-        'pdo'   => 'pdo',
-        'mysql' => 'pdo_mysql',
-        'PDO'   => 'pdo',
-        'MySQL' => 'pdo_mysql'
-    //'N/A' => 'pdo_pgsql',
-//'N/A' => 'pdo_sqlite',
-//'N/A' => 'pdo_oci',
-//'N/A' => 'oci8',
-    ),
-    'console_commands'       => array(),
-    'console_helpers'        => array(),
+    // @see http://kohanaframework.org/3.3/guide/database/config#connection-settings
+    // @see http://www.doctrine-project.org/docs/dbal/2.4/en/reference/configuration.html#connection-details
+    'type_driver_mapping'    => [
+        'pdo'        => 'pdo_mysql',
+        'mysql'      => 'pdo_mysql',
+        'PDO'        => 'pdo_mysql',
+        'MySQL'      => 'pdo_mysql',
+        'MySQLi'     => 'mysqli',
+        'PDO_MySQL'  => 'pdo_mysql',
+        'PDO_MySQLi' => 'mysqli',
+        //'N/A' => 'pdo_pgsql',
+        //'N/A' => 'pdo_sqlite',
+        //'N/A' => 'pdo_oci',
+        //'N/A' => 'oci8',
+    ],
+    'console_commands'       => [],
+    'console_helpers'        => [],
     'configuration'          => APPPATH . 'config/doctrine.xml',
     'debug'                  => TRUE,
     'default_database_group' => 'default',
     'cache_implementation'   => 'ArrayCache',
     'cache_namespace'        => NULL,
-    'enabled_extensions'     => array(
-// 		'string' => array(
-//     		'GroupConcat'   =>  'DoctrineExtensions\Query\Mysql\GroupConcat',
-//     		'StringAgg'     =>  'DoctrineExtensions\Query\PostgreSql\StringAgg',
-//        )
-    ),
-);
+    'enabled_extensions'     => [
+        // 		'string' => array(
+        //     		'GroupConcat'   =>  'DoctrineExtensions\Query\Mysql\GroupConcat',
+        //     		'StringAgg'     =>  'DoctrineExtensions\Query\PostgreSql\StringAgg',
+        //        )
+    ],
+];
